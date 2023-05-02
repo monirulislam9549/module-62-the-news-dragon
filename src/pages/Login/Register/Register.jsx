@@ -1,25 +1,70 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../providers/AuthProvider';
 
 const Register = () => {
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
+    const { createUser } = useContext(AuthContext)
+    const [accepted, setAccepted] = useState(false)
+
+
+    const handleRegister = event => {
+        event.preventDefault()
+        const form = event.target;
+        const name = form.name.value;
+        const password = form.password.value;
+        const email = form.email.value;
+        const photo = form.photo.value;
+        console.log(name, email, password, photo);
+        setError('')
+        setSuccess('')
+
+
+        if (password.length < 6) {
+            setError('Provide at least six character')
+            return;
+        }
+
+
+        createUser(email, password)
+            .then((userCredential) => {
+                const createdUser = userCredential.user;
+                console.log(createdUser);
+                setSuccess('User created successfully')
+                event.target.reset()
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage);
+            });
+    }
+
+    const handleAccepted = (event) => {
+        setAccepted(event.target.checked)
+        // console.log(event.target.checked);
+    }
+
     return (
         <Container className='w-50 mx-auto'>
             <h3>Please Register</h3>
-            <Form>
+            <Form onSubmit={handleRegister}>
                 <Form.Group
                     className="mb-3"
-                    controlId="formBasicEmail">
+                    controlId="#formBasicName">
                     <Form.Label>Name</Form.Label>
                     <Form.Control
                         type="text"
                         name='name'
                         placeholder="Your Name"
+
                         required />
                 </Form.Group>
                 <Form.Group
                     className="mb-3"
-                    controlId="formBasicEmail">
+                    controlId="#formBasicPhoto">
                     <Form.Label>Photo Url</Form.Label>
                     <Form.Control
                         type="text"
@@ -53,26 +98,30 @@ const Register = () => {
                     className="mb-3"
                     controlId="formBasicCheckbox">
                     <Form.Check
+                        onClick={handleAccepted}
                         type="checkbox"
-                        label="Accept Term & Conditions"
+                        label={<>Accept <Link to='/terms'> Terms & Conditions</Link> </>}
                         name='accept'
                     />
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
+                <Button
+                    disabled={!accepted}
+                    variant="primary"
+                    type="submit">
                     Register
                 </Button>
                 <br />
                 <Form.Text className="text-secondary">
                     Already have an account?<Link to="/login">Login</Link>
                 </Form.Text>
-
+                <br />
                 <Form.Text className="text-success">
-
+                    {success}
                 </Form.Text>
 
                 <Form.Text className="text-danger">
-
+                    {error}
                 </Form.Text>
             </Form>
         </Container>

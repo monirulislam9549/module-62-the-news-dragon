@@ -5,7 +5,16 @@ import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 import { AuthContext } from '../../../providers/AuthProvider';
 
 const NavigationBar = () => {
-    const { user } = useContext(AuthContext)
+    const { user, logOut } = useContext(AuthContext)
+    const handleLogout = () => {
+        logOut()
+            .then(() => {
+                // Sign-out successful.
+            }).catch((error) => {
+                console.log(error);
+            });
+    }
+
     return (
         <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
             <Container>
@@ -22,7 +31,7 @@ const NavigationBar = () => {
                             </FaUserCircle>
                         }
 
-                        {user ? <Button variant="secondary">Logout</Button> :
+                        {user ? <Button onClick={handleLogout} variant="secondary">Logout</Button> :
                             <Link to="/login">
                                 <Button variant="secondary">Login</Button>
                             </Link>}

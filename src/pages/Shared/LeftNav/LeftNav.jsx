@@ -5,7 +5,7 @@ const LeftNav = () => {
     const [categories, setCategories] = useState([])
     useEffect(() => {
         const fetchData = async () => {
-            const url = `http://localhost:5000/categories`
+            const url = `https://the-news-dragon-server-monirulislam9549.vercel.app/categories`
             try {
                 const res = await fetch(url)
                 const data = await res.json()
